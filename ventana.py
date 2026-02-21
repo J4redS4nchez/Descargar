@@ -10,7 +10,7 @@ from componentes.switch_MODO import SwitchModo
 from componentes.tarjetas import TarjetasLayout
 import configuracion
 import precarga
-
+from utils.interfaz import centrar_ventana
 
 
 
@@ -26,9 +26,7 @@ class VentanaPrincipal:
         self.ventana.configure(bg=configuracion.COLOR_FONDO_VENTANA)
 
 
-        ancho_ventana = 900
-        alto_ventana = 500
-        self._centrar_ventana(ancho_ventana, alto_ventana)
+        centrar_ventana(self.ventana, 900, 500)
 
         # Variables de la interfaz
         self.url = tk.StringVar(value="")
@@ -88,16 +86,7 @@ class VentanaPrincipal:
         """Inicia la aplicación."""
         self.ventana.mainloop()
 
-    def _centrar_ventana(self, ancho: int, alto: int):
-        """Centra la ventana en la pantalla usando el tamaño indicado."""
-        self.ventana.update_idletasks()  # asegura que Tk tenga datos de pantalla
-        ancho_pantalla = self.ventana.winfo_screenwidth()
-        alto_pantalla = self.ventana.winfo_screenheight()
 
-        x = (ancho_pantalla // 2) - (ancho // 2)
-        y = (alto_pantalla // 2) - (alto // 2)
-
-        self.ventana.geometry(f"{ancho}x{alto}+{x}+{y}")
 
     def _iniciar_interfaz(self):
         """Oculta la presentación y construye la interfaz principal."""
