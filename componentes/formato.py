@@ -14,12 +14,18 @@ class FormatoTarjeta:
     Todo centrado en el centro de la tarjeta y sin salirse (usa relwidth).
     """
 
-    def __init__(self, tarjeta_padre, callback_cambio_formato=None):
+    def __init__(self, tarjeta_padre, callback_cambio_formato=None, callback_cambio_ruta=None):
         self.tarjeta_padre = tarjeta_padre
 
         # Callback opcional para notificar cuando cambia el formato
         self.callback_cambio_formato = callback_cambio_formato
-        self.tarjeta_padre = tarjeta_padre
+
+        # Callback opcional para notificar cuando cambia la ruta
+        self.callback_cambio_ruta = callback_cambio_ruta
+
+
+
+        # Callback opcional para notificar cuando cambia la ruta
 
         self.contenedor_fila = None
         self.select_formato = None
@@ -113,6 +119,9 @@ class FormatoTarjeta:
 
         self.cuadro_ruta = ctk.CTkEntry(**configuracion_entry)
         self.cuadro_ruta.grid(row=0, column=1, sticky="ew")
+
+        # Detectar cuando el usuario escribe o borra en el textbox
+        self.cuadro_ruta.bind("<KeyRelease>", self._al_cambiar_ruta)
 
 
         # Asegurar que el textbox reciba el foco al hacer click (para permitir escribir/borrar/pegar)
@@ -295,6 +304,9 @@ class FormatoTarjeta:
         # Colocar la ruta elegida en el textbox
         self.establecer_ruta(ruta_seleccionada)
 
+        # Notificar que la ruta cambió (porque aquí no hay teclas)
+        self._al_cambiar_ruta()
+
         # Asegurar foco para permitir seguir editando si quiere
         try:
             self.cuadro_ruta._entry.focus_set()
@@ -315,5 +327,18 @@ class FormatoTarjeta:
         if callable(self.callback_cambio_formato):
             try:
                 self.callback_cambio_formato(self.obtener_formato())
+            except Exception:
+                pass
+
+
+
+    def _al_cambiar_ruta(self, _evento=None):
+        """
+        Se ejecuta cuando el usuario escribe o borra en el textbox de ruta.
+        Notifica al callback (si existe) la ruta actual.
+        """
+        if callable(self.callback_cambio_ruta):
+            try:
+                self.callback_cambio_ruta(self.obtener_ruta())
             except Exception:
                 pass

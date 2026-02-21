@@ -87,7 +87,8 @@ class TarjetasLayout:
         # Contenido de la tarjeta 2 (formato + ruta + examinar)
         self.componente_formato = FormatoTarjeta(
             self.tarjeta_2,
-            callback_cambio_formato=self._al_cambiar_formato
+            callback_cambio_formato=self._al_cambiar_formato,
+            callback_cambio_ruta=self._al_cambiar_ruta
         )
         self.componente_formato.crear()
 
@@ -185,22 +186,41 @@ class TarjetasLayout:
         """
         self._actualizar_visibilidad_descarga()
 
+
+
+    def _al_cambiar_ruta(self, _ruta_actual: str):
+        """
+        Se llama cuando el usuario cambia la ruta en el textbox.
+        """
+        self._actualizar_visibilidad_descarga()
+
+
+
     def _actualizar_visibilidad_descarga(self):
         """
-        Oculta el botón descargar si el formato es el placeholder " •  •  •  •  •".
-        Lo muestra si es cualquier otra opción.
+        Oculta el botón descargar si:
+        - el formato es el placeholder " •  •  •  •  •"
+        O
+        - la ruta está vacía
+
+        Solo lo muestra si:
+        - NO es placeholder
+        Y
+        - la ruta NO está vacía
         """
         if self.componente_formato is None or self.componente_progreso is None:
             return
 
         formato_actual = self.componente_formato.obtener_formato()
         placeholder = self.componente_formato.valores_formato[0]
-
         es_placeholder = (str(formato_actual).strip() == str(placeholder).strip())
 
-        # Si está en placeholder -> ocultar
-        self.componente_progreso.establecer_visibilidad_boton_descargar(not es_placeholder)
+        ruta_actual = str(self.componente_formato.obtener_ruta()).strip()
+        ruta_vacia = (ruta_actual == "")
 
+        mostrar = (not es_placeholder) and (not ruta_vacia)
+
+        self.componente_progreso.establecer_visibilidad_boton_descargar(mostrar)
 
 
     def _al_cambiar_modo(self, _esta_oscuro):
