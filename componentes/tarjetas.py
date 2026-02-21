@@ -85,13 +85,19 @@ class TarjetasLayout:
 
 
         # Contenido de la tarjeta 2 (formato + ruta + examinar)
-        self.componente_formato = FormatoTarjeta(self.tarjeta_2)
+        self.componente_formato = FormatoTarjeta(
+            self.tarjeta_2,
+            callback_cambio_formato=self._al_cambiar_formato
+        )
         self.componente_formato.crear()
 
 
         # Contenido de la tarjeta 3 (barra de progreso)
         self.componente_progreso = ProgresoTarjeta(self.tarjeta_3)
         self.componente_progreso.crear()
+
+        # Estado inicial del botón descargar según el formato actual
+        self._actualizar_visibilidad_descarga()
 
         # Icono inicial según el modo actual
         if configuracion.MODO_OSCURO:
@@ -171,6 +177,30 @@ class TarjetasLayout:
         # Actualiza el contenido de la tarjeta Formato
         if hasattr(self, "componente_formato") and self.componente_formato is not None:
             self.componente_formato.aplicar_tema()
+
+
+    def _al_cambiar_formato(self, _formato_actual: str):
+        """
+        Se llama cuando el usuario cambia el formato en el ComboBox.
+        """
+        self._actualizar_visibilidad_descarga()
+
+    def _actualizar_visibilidad_descarga(self):
+        """
+        Oculta el botón descargar si el formato es el placeholder " •  •  •  •  •".
+        Lo muestra si es cualquier otra opción.
+        """
+        if self.componente_formato is None or self.componente_progreso is None:
+            return
+
+        formato_actual = self.componente_formato.obtener_formato()
+        placeholder = self.componente_formato.valores_formato[0]
+
+        es_placeholder = (str(formato_actual).strip() == str(placeholder).strip())
+
+        # Si está en placeholder -> ocultar
+        self.componente_progreso.establecer_visibilidad_boton_descargar(not es_placeholder)
+
 
 
     def _al_cambiar_modo(self, _esta_oscuro):

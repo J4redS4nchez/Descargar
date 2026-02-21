@@ -1,6 +1,7 @@
 import customtkinter as ctk
 import configuracion
 from imagenes import cargar_icono_descargar_ctk
+from funcionamiento.descargar import actualizar_visibilidad_boton_descargar
 
 
 class ProgresoTarjeta:
@@ -138,6 +139,13 @@ class ProgresoTarjeta:
         if self.boton_descargar is None:
             return
 
+        # Si el botón está oculto (place_forget), no lo volvemos a mostrar
+        try:
+            if not self.boton_descargar.winfo_ismapped():
+                return
+        except Exception:
+            pass
+
         margen = 12
         ancho_boton = self.boton_descargar.winfo_reqwidth()
 
@@ -163,3 +171,15 @@ class ProgresoTarjeta:
         if self.boton_descargar is None or self.icono_descargar_normal is None:
             return
         self.boton_descargar.configure(image=self.icono_descargar_normal)
+
+
+
+    def establecer_visibilidad_boton_descargar(self, visible: bool):
+        """
+        Delegamos la visibilidad/posicionamiento del botón a funcionamiento/descargar.py
+        """
+        actualizar_visibilidad_boton_descargar(
+            boton_descargar=self.boton_descargar,
+            tarjeta_padre=self.tarjeta_padre,
+            visible=visible
+        )

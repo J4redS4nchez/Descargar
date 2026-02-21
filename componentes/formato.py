@@ -14,7 +14,11 @@ class FormatoTarjeta:
     Todo centrado en el centro de la tarjeta y sin salirse (usa relwidth).
     """
 
-    def __init__(self, tarjeta_padre):
+    def __init__(self, tarjeta_padre, callback_cambio_formato=None):
+        self.tarjeta_padre = tarjeta_padre
+
+        # Callback opcional para notificar cuando cambia el formato
+        self.callback_cambio_formato = callback_cambio_formato
         self.tarjeta_padre = tarjeta_padre
 
         self.contenedor_fila = None
@@ -79,6 +83,7 @@ class FormatoTarjeta:
         # así que esto siempre debe existir (no usar None)
         configuracion_select["dropdown_hover_color"] = configuracion.COLOR_SELECT_FORMATO_DROPDOWN_HOVER
 
+        configuracion_select["command"] = self._al_cambiar_formato
         # Crear el ComboBox (primero se crea, luego ya puedes configurar si quisieras)
         self.select_formato = ctk.CTkComboBox(**configuracion_select)
         self.select_formato.set(self.valores_formato[0])
@@ -296,5 +301,19 @@ class FormatoTarjeta:
         except Exception:
             try:
                 self.cuadro_ruta.focus_set()
+            except Exception:
+                pass
+
+
+
+
+    def _al_cambiar_formato(self, _valor_seleccionado=None):
+        """
+        Se ejecuta cuando el usuario cambia la opción del ComboBox.
+        Notifica al callback (si existe) el formato actual.
+        """
+        if callable(self.callback_cambio_formato):
+            try:
+                self.callback_cambio_formato(self.obtener_formato())
             except Exception:
                 pass
