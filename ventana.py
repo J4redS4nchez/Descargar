@@ -10,7 +10,7 @@ from componentes.switch_MODO import SwitchModo
 from componentes.tarjetas import TarjetasLayout
 import configuracion
 import precarga
-from utils.interfaz import centrar_ventana
+from utils.interfaz import centrar_ventana, ocultar_ventana, mostrar_ventana_lista
 
 
 
@@ -18,7 +18,7 @@ class VentanaPrincipal:
     def __init__(self):
         # Ventana base
         self.ventana = tk.Tk()
-        self.ventana.withdraw()  # Oculta mientras se prepara (evita ventana chiquita)
+        ocultar_ventana(self.ventana)  # Oculta mientras se prepara (evita ventana chiquita)
 
         self.ventana.title("Eemsik")
         self.ventana.resizable(False, False)
@@ -89,21 +89,18 @@ class VentanaPrincipal:
 
 
     def _iniciar_interfaz(self):
-        """Oculta la presentación y construye la interfaz principal."""
-        # Ocultamos para que no se vea el proceso de construcción y pintado de widgets
-        self.ventana.withdraw()
+            """Oculta la presentación y construye la interfaz principal."""
+            # Cambiamos self.ventana.withdraw() por la función de utils
+            ocultar_ventana(self.ventana)
 
-        # Quitamos el splash
-        self.presentacion.ocultar()
+            # Quitamos el splash
+            self.presentacion.ocultar()
 
-        # Construimos la UI
-        self._crear_componentes()
+            # Construimos la UI
+            self._crear_componentes()
 
-        # Forzamos a que Tk calcule geometría y pinte todo antes de mostrar
-        self.ventana.update_idletasks()
-
-        # Mostramos ya lista
-        self.ventana.deiconify()
+            # Cambiamos las líneas de update y deiconify por la función de utils
+            mostrar_ventana_lista(self.ventana)
 
 
     def _al_cambiar_modo(self, esta_oscuro):
