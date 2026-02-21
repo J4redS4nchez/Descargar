@@ -5,6 +5,7 @@ import configuracion
 from componentes.URL import URLTarjeta
 from componentes.progreso import ProgresoTarjeta
 from componentes.formato import FormatoTarjeta
+from utils.interfaz import configurar_columnas_grid, configurar_filas_grid
 
 
 
@@ -47,12 +48,9 @@ class TarjetasLayout:
         self.contenedor.pack(fill="both", expand=True, padx=18, pady=18)
 
         # Grid: 2 columnas, 3 filas
-        self.contenedor.grid_rowconfigure(0, weight=1)
-        self.contenedor.grid_rowconfigure(1, weight=1)
-        self.contenedor.grid_rowconfigure(2, weight=1)
-
-        self.contenedor.grid_columnconfigure(0, weight=9)
-        self.contenedor.grid_columnconfigure(1, weight=1)
+        # Grid: 2 columnas, 3 filas simplificado con utils
+        configurar_filas_grid(self.contenedor, [1, 1, 1])
+        configurar_columnas_grid(self.contenedor, [9, 1])
 
         # Estilo común de tarjetas
         estilo_tarjeta = {

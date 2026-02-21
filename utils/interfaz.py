@@ -17,6 +17,8 @@ def mostrar_ventana_lista(ventana):
     ventana.update_idletasks()
     ventana.deiconify()
 
+
+
 def mostrar_componente_total(componente):
     """Muestra un componente ocupando todo el espacio disponible (fill both)."""
     if componente is not None:
@@ -26,3 +28,26 @@ def eliminar_componente(componente):
     """Destruye un widget de forma segura y limpia."""
     if componente is not None:
         componente.destroy()
+
+
+def configurar_columnas_grid(contenedor, pesos):
+    """Configura el peso de múltiples columnas de una sola vez."""
+    for i, peso in enumerate(pesos):
+        contenedor.grid_columnconfigure(i, weight=peso)
+
+def crear_etiqueta_estandar(contenedor, texto, color_fondo, fuente=("Arial", 12)):
+    """Crea una etiqueta con el estilo común del proyecto."""
+    return tk.Label(contenedor, text=texto, bg=color_fondo, font=fuente)
+
+
+# utils/interfaz.py
+
+def configurar_filas_grid(contenedor, pesos):
+    """Configura el peso de múltiples filas de una sola vez."""
+    for i, peso in enumerate(pesos):
+        contenedor.grid_rowconfigure(i, weight=peso)
+
+def configurar_columnas_grid(contenedor, pesos):
+    """Configura el peso de múltiples columnas de una sola vez."""
+    for i, peso in enumerate(pesos):
+        contenedor.grid_columnconfigure(i, weight=peso)
