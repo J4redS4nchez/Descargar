@@ -16,3 +16,13 @@ def mostrar_ventana_lista(ventana):
     """Fuerza la actualización de widgets y muestra la ventana final."""
     ventana.update_idletasks()
     ventana.deiconify()
+
+def mostrar_componente_total(componente):
+    """Muestra un componente ocupando todo el espacio disponible (fill both)."""
+    if componente is not None:
+        componente.pack(fill="both", expand=True)
+
+def eliminar_componente(componente):
+    """Destruye un widget de forma segura y limpia."""
+    if componente is not None:
+        componente.destroy()

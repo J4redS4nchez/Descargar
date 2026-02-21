@@ -4,8 +4,7 @@
 import tkinter as tk
 from imagenes import cargar_logo_presentacion
 import configuracion
-
-
+from utils.interfaz import eliminar_componente, mostrar_componente_total
 
 class Presentacion:
     def __init__(self, ventana: tk.Tk):
@@ -22,7 +21,7 @@ class Presentacion:
         # Fondo según el modo actual (claro/oscuro)
         self.contenedor = tk.Frame(self.ventana, bg=configuracion.COLOR_FONDO_VENTANA)
 
-        self.contenedor.pack(fill="both", expand=True)
+        mostrar_componente_total(self.contenedor)
 
         # Cargar logo según el modo actual (claro/oscuro)
         self.logo_tk = cargar_logo_presentacion(ancho_maximo=420)
@@ -35,7 +34,6 @@ class Presentacion:
 
     def ocultar(self):
         """Quita la pantalla de presentación."""
-        if self.contenedor is not None:
-            self.contenedor.destroy()
-            self.contenedor = None
-            self.logo_tk = None
+        # Usamos la herramienta de utils para destruir el contenedor
+        eliminar_componente(self.contenedor)
+        self.contenedor = None
