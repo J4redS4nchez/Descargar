@@ -22,8 +22,11 @@ class URLTarjeta:
     Todo queda centrado dentro de la tarjeta.
     """
 
-    def __init__(self, tarjeta_padre):
+    def __init__(self, tarjeta_padre, callback_cambio_url=None):
         self.tarjeta_padre = tarjeta_padre
+
+        # Callback opcional para notificar cuando cambia la URL (principal o renglones extra)
+        self.callback_cambio_url = callback_cambio_url
 
         self.etiqueta_url = None
         self.cuadro_url = None
@@ -131,6 +134,10 @@ class URLTarjeta:
 
         # El entry principal ocupa todo el ancho de su contenedor
         self.cuadro_url.grid(row=0, column=0, sticky="ew")
+
+
+        # Detectar cuando el usuario escribe o borra en el cuadro URL principal
+        self.cuadro_url.bind("<KeyRelease>", self._al_cambiar_url)
 
 
         # Guardar altura del entry principal para igualarla en los renglones extra
@@ -252,6 +259,28 @@ class URLTarjeta:
         self.cuadro_url.insert(0, texto)
 
 
+
+    def _notificar_cambio_url(self):
+        """
+        Notifica al callback (si existe) que algo cambió en la sección URL.
+        Sirve para que el layout decida si muestra u oculta el botón descargar.
+        """
+        if callable(getattr(self, "callback_cambio_url", None)):
+            try:
+                self.callback_cambio_url()
+            except Exception:
+                pass
+
+
+    def _al_cambiar_url(self, _evento=None):
+        """
+        Se ejecuta cuando el usuario escribe o borra en algún Entry de URL.
+        """
+        self._notificar_cambio_url()
+
+
+
+
     def _borrar_texto(self):
         """
         Borra el contenido del textbox.
@@ -289,6 +318,9 @@ class URLTarjeta:
         except Exception:
             pass
 
+        # Notificar que la URL cambió (para actualizar visibilidad del botón descargar)
+        self._notificar_cambio_url()
+
 
 
     def _borrar_entry(self, entry):
@@ -319,6 +351,10 @@ class URLTarjeta:
             ventana_raiz.after(10, lambda: ventana_raiz.focus_set())
         except Exception:
             pass
+
+
+        # Notificar que la URL cambió (para actualizar visibilidad del botón descargar)
+        self._notificar_cambio_url()
 
 
     def _mostrar_boton_x_principal(self):
@@ -721,6 +757,10 @@ class URLTarjeta:
                 self.etiqueta_url.configure(text="URL")
 
 
+        # Notificar que cambió el estado desplegado/oculto (afecta reglas del botón descargar)
+        self._notificar_cambio_url()
+
+
 
 
     def _crear_renglones_extra(self):
@@ -792,6 +832,12 @@ class URLTarjeta:
 
             entry_extra = ctk.CTkEntry(**configuracion_entry)
             entry_extra.grid(row=0, column=0, sticky="ew")
+
+
+            # Detectar escritura/borrado en renglones extra
+            entry_extra.bind("<KeyRelease>", self._al_cambiar_url)
+
+
 
             # Botón "x" del renglón extra:
             # Se pinta igual que el textbox para que no se vea el cuadro, solo la "x".

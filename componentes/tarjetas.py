@@ -80,7 +80,7 @@ class TarjetasLayout:
 
 
         # Contenido de la tarjeta 1 (URL)
-        self.componente_url = URLTarjeta(self.tarjeta_1)
+        self.componente_url = URLTarjeta(self.tarjeta_1, callback_cambio_url=self._al_cambiar_url)
         self.componente_url.crear()
 
 
@@ -188,11 +188,21 @@ class TarjetasLayout:
 
 
 
+    def _al_cambiar_url(self):
+        """
+        Se llama cuando el usuario cambia la URL (escribe, borra o despliega/oculta).
+        """
+        self._actualizar_visibilidad_descarga()
+
+
     def _al_cambiar_ruta(self, _ruta_actual: str):
         """
         Se llama cuando el usuario cambia la ruta en el textbox.
         """
         self._actualizar_visibilidad_descarga()
+
+
+
 
 
 
@@ -202,11 +212,12 @@ class TarjetasLayout:
         - el formato es el placeholder " •  •  •  •  •"
         O
         - la ruta está vacía
+        O
+        - si NO está desplegado: la URL principal está vacía
+        O
+        - si SÍ está desplegado: TODOS los renglones (incluyendo el principal) están vacíos
 
-        Solo lo muestra si:
-        - NO es placeholder
-        Y
-        - la ruta NO está vacía
+        Solo lo muestra si se cumplen todas las condiciones necesarias.
         """
         if self.componente_formato is None or self.componente_progreso is None:
             return
@@ -218,9 +229,43 @@ class TarjetasLayout:
         ruta_actual = str(self.componente_formato.obtener_ruta()).strip()
         ruta_vacia = (ruta_actual == "")
 
-        mostrar = (not es_placeholder) and (not ruta_vacia)
+        # Validación de URLs según el estado desplegado/oculto
+        urls_invalidas = False
 
+        if self.componente_url is not None:
+            esta_desplegado = bool(getattr(self.componente_url, "desplegado", False))
+
+            # URL del renglón principal
+            url_principal = str(self.componente_url.obtener_url()).strip()
+
+            if not esta_desplegado:
+                # Si NO está desplegado, la URL principal no debe estar vacía
+                urls_invalidas = (url_principal == "")
+            else:
+                # Si SÍ está desplegado, al menos uno de los renglones debe tener texto
+                hay_al_menos_una_url = (url_principal != "")
+
+                # Renglones extra (si existen)
+                renglones_extra = getattr(self.componente_url, "renglones_extra", [])
+                for entry_extra in renglones_extra:
+                    try:
+                        texto_extra = str(entry_extra.get()).strip()
+                    except Exception:
+                        texto_extra = ""
+
+                    if texto_extra != "":
+                        hay_al_menos_una_url = True
+                        break
+
+                urls_invalidas = (not hay_al_menos_una_url)
+
+        mostrar = (not es_placeholder) and (not ruta_vacia) and (not urls_invalidas)
         self.componente_progreso.establecer_visibilidad_boton_descargar(mostrar)
+
+
+
+
+
 
 
     def _al_cambiar_modo(self, _esta_oscuro):
