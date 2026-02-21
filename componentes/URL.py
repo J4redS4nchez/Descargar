@@ -761,7 +761,7 @@ class URLTarjeta:
         # Usar el mismo radio de esquina del entry principal para que se vean idénticos
         radio_esquinas = self.cuadro_url.cget("corner_radius") if self.cuadro_url is not None else None
 
-        for i in range(4):
+        for i in range(3):
             # Contenedor por renglón (permite colocar la "x" encima del textbox)
             contenedor_renglon = ctk.CTkFrame(
                 master=self.contenedor_renglones,
@@ -817,7 +817,7 @@ class URLTarjeta:
             boton_x.place(relx=1.0, rely=0.5, anchor="e", x=-6)
 
             # Separación mínima e igual entre renglones
-            pady_abajo = self.separacion_entre_renglones if i < 3 else 0
+            pady_abajo = self.separacion_entre_renglones if i < 2 else 0
             contenedor_renglon.grid(row=i, column=0, sticky="ew", pady=(0, pady_abajo))
 
             self.contenedores_renglones_extra.append(contenedor_renglon)
@@ -856,7 +856,7 @@ class URLTarjeta:
         # Calcular altura necesaria para 4 renglones extra + separación mínima
         separacion = self.separacion_entre_renglones
         altura_renglon = alto_entry
-        altura_total = (4 * altura_renglon) + (3 * separacion)
+        altura_total = (3 * altura_renglon) + (2 * separacion)
 
         # Colocar el contenedor justo debajo del entry, mismo ancho
         # En CustomTkinter, width/height no se pasan en place(), se configuran en el widget
