@@ -40,15 +40,16 @@ def descargar_short(URL, ruta_guardado, establecer_progreso=None):
         "outtmpl": os.path.join(ruta_guardado, "%(title).200s.%(ext)s"),
         "noplaylist": True,
         "progress_hooks": [gancho_progreso],
+        "overwrites": False,
 
-        # ✅ FORZAR H.264 (avc1) en MP4 + audio M4A
+        #FORZAR H.264 (avc1) en MP4 + audio M4A
         # - Esto evita que yt-dlp elija AV1 aunque sea mp4
         "format": "bv*[vcodec^=avc1][ext=mp4]+ba[ext=m4a]/b[vcodec^=avc1][ext=mp4]/b[ext=mp4]/best",
 
-        # ✅ Forzar salida mp4 al fusionar
+        #Forzar salida mp4 al fusionar
         "merge_output_format": "mp4",
 
-        # ✅ Para fusionar correctamente (y evitar archivos raros)
+        #Para fusionar correctamente (y evitar archivos raros)
         "ffmpeg_location": FFMPEG_BIN,
 
         "quiet": True,

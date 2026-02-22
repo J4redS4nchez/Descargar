@@ -42,6 +42,7 @@ def descargar_mp4(URL: str, ruta_guardado: str, establecer_progreso=None):
         "outtmpl": os.path.join(ruta_guardado, "%(title).200s.%(ext)s"),
         "noplaylist": True,
         "progress_hooks": [gancho_progreso],
+        "overwrites": False,
 
         # Forzar H.264 (avc1) en MP4 + audio M4A
         "format": "bv*[vcodec^=avc1][ext=mp4]+ba[ext=m4a]/b[vcodec^=avc1][ext=mp4]/b[ext=mp4]/best",
