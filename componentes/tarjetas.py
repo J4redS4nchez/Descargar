@@ -82,6 +82,8 @@ class TarjetasLayout:
         self.componente_url.crear()
 
 
+
+
         # Contenido de la tarjeta 2 (formato + ruta + examinar)
         self.componente_formato = FormatoTarjeta(
             self.tarjeta_2,
@@ -94,6 +96,9 @@ class TarjetasLayout:
         # Contenido de la tarjeta 3 (barra de progreso)
         self.componente_progreso = ProgresoTarjeta(self.tarjeta_3)
         self.componente_progreso.crear()
+
+        # Conectar referencias para que el botón Descargar pueda leer URL/formato/ruta
+        self.componente_progreso.conectar_tarjetas(self.componente_url, self.componente_formato)        
 
         # Estado inicial del botón descargar según el formato actual
         self._actualizar_visibilidad_descarga()

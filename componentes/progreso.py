@@ -18,6 +18,8 @@ class ProgresoTarjeta:
         self.icono_descargar = None
         self.icono_descargar_normal = None
         self.icono_descargar_grande = None
+        self.tarjeta_url = None
+        self.tarjeta_formato = None
 
     def crear(self):
         """
@@ -32,8 +34,8 @@ class ProgresoTarjeta:
         # Aplicar tema antes de mostrarla para evitar que se vea el color por defecto
         self.aplicar_tema()
 
-        # Valor inicial (0% aprox.)
-        self.barra_progreso.set(0.5)
+        # Valor inicial (0%)
+        self.barra_progreso.set(0.0)
 
         # Centrada y con ancho relativo para que no se salga de la tarjeta
         self.barra_progreso.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.80)
@@ -105,10 +107,16 @@ class ProgresoTarjeta:
         if self.boton_descargar is not None:
             self.boton_descargar.configure(image=self.icono_descargar_normal)
 
+
     def establecer_progreso(self, valor):
         """
         Establece el progreso.
         'valor' debe estar entre 0.0 y 1.0.
+
+        Importante:
+        - La descarga irá en un hilo aparte.
+        - Tkinter/CustomTkinter NO permite actualizar widgets desde otro hilo.
+        - Por eso usamos after() para actualizar en el hilo principal.
         """
         if self.barra_progreso is None:
             return
@@ -119,16 +127,57 @@ class ProgresoTarjeta:
         elif valor > 1:
             valor = 1
 
-        self.barra_progreso.set(valor)
+        def _aplicar():
+            if self.barra_progreso is not None:
+                self.barra_progreso.set(valor)
 
+        # Programar actualización en el hilo principal
+        try:
+            self.tarjeta_padre.after(0, _aplicar)
+        except Exception:
+            # Fallback (por si algo raro pasa)
+            _aplicar()
 
 
     def _al_presionar_descargar(self):
         """
         Acción del botón de descargar.
-        Por ahora no hace nada: aquí después conectaremos la descarga real.
+        Ejecuta la descarga en un hilo para no congelar la interfaz.
         """
-        pass
+        import threading
+        from funcionamiento.analizar import al_presionar_descargar
+
+        # Evitar doble click mientras descarga
+        if self.boton_descargar is not None:
+            self.boton_descargar.configure(state="disabled")
+
+        # Reiniciar barra al iniciar
+        self.establecer_progreso(0.0)
+
+        def tarea():
+            try:
+                al_presionar_descargar(
+                    tarjeta_url=self.tarjeta_url,
+                    tarjeta_formato=self.tarjeta_formato,
+                    establecer_progreso=self.establecer_progreso
+                )
+            finally:
+                # Al terminar, reactivar botón en el hilo principal
+                def _finalizar():
+                    if self.boton_descargar is not None:
+                        self.boton_descargar.configure(state="normal")
+
+                    # Opcional: dejar en 100% un momento y luego reiniciar
+                    self.establecer_progreso(1.0)
+                    self.tarjeta_padre.after(800, lambda: self.establecer_progreso(0.0))
+
+                try:
+                    self.tarjeta_padre.after(0, _finalizar)
+                except Exception:
+                    _finalizar()
+
+        hilo = threading.Thread(target=tarea, daemon=True)
+        hilo.start()
 
 
 
@@ -183,3 +232,16 @@ class ProgresoTarjeta:
             tarjeta_padre=self.tarjeta_padre,
             visible=visible
         )
+
+
+
+
+    def conectar_tarjetas(self, tarjeta_url, tarjeta_formato):
+        """
+        Guarda referencias para que el botón Descargar pueda leer:
+        - URLTarjeta (textbox URL y estado desplegado)
+        - FormatoTarjeta (selectbox y textbox ruta)
+        """
+        self.tarjeta_url = tarjeta_url
+        self.tarjeta_formato = tarjeta_formato
+
