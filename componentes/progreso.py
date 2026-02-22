@@ -21,6 +21,7 @@ class ProgresoTarjeta:
         self.tarjeta_url = None
         self.tarjeta_formato = None
         self.tarjeta_aviso = None
+        self.barra_activa = False
 
     def crear(self):
         """
@@ -37,6 +38,8 @@ class ProgresoTarjeta:
 
         # Valor inicial (0%)
         self.barra_progreso.set(0.0)
+        self.barra_activa = False
+        self.aplicar_tema()
 
         # Centrada y con ancho relativo para que no se salga de la tarjeta
         self.barra_progreso.place(relx=0.5, rely=0.5, anchor="center", relwidth=0.80)
@@ -95,9 +98,17 @@ class ProgresoTarjeta:
         # Fondo de la barra igual al color de la tarjeta para que se vea integrada
         # fg_color = riel (fondo) de la barra
         # progress_color = color del relleno (avance)
+        color_fondo = configuracion.COLOR_BARRA_PROGRESO_FONDO
+        color_relleno = configuracion.COLOR_BARRA_PROGRESO_RELLENO
+
+        # Si no está descargando, hacemos que el relleno sea igual al fondo
+        # para que se vea completamente vacía.
+        if not self.barra_activa:
+            color_relleno = color_fondo
+
         self.barra_progreso.configure(
-            fg_color=configuracion.COLOR_BARRA_PROGRESO_FONDO,
-            progress_color=configuracion.COLOR_BARRA_PROGRESO_RELLENO
+            fg_color=color_fondo,
+            progress_color=color_relleno
         )
 
 
@@ -154,6 +165,9 @@ class ProgresoTarjeta:
 
         # Reiniciar barra al iniciar
         self.establecer_progreso(0.0)
+        # Activar el relleno para que se vea mientras descarga
+        self.barra_activa = True
+        self.aplicar_tema()
 
 
         def tarea():
@@ -175,10 +189,22 @@ class ProgresoTarjeta:
 
                     if not resultado_descarga:
                         self.establecer_progreso(0.0)
+
+                        # Volver a barra completamente vacía
+                        self.barra_activa = False
+                        self.aplicar_tema()
                         return
 
+                        
                     self.establecer_progreso(1.0)
-                    self.tarjeta_padre.after(800, lambda: self.establecer_progreso(0.0))
+
+                    def _reiniciar_barra():
+                        self.establecer_progreso(0.0)
+                        # Volver a barra completamente vacía al terminar
+                        self.barra_activa = False
+                        self.aplicar_tema()
+
+                    self.tarjeta_padre.after(800, _reiniciar_barra)
 
                 try:
                     self.tarjeta_padre.after(0, _finalizar)
