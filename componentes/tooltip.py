@@ -100,3 +100,45 @@ def mostrar_tooltip(frame_padre, mensaje: str, duracion_ms: int = 5000):
 def mostrar_tooltip_ruta_invalida(frame_padre, duracion_ms: int = 5000):
     """Muestra un tooltip con el mensaje 'Ruta invalida'."""
     mostrar_tooltip(frame_padre, "Ruta invalida", duracion_ms)
+
+
+
+
+def aplicar_tema_tooltip(frame_padre):
+    """
+    Si hay un tooltip visible en frame_padre, reaplica colores según el modo actual.
+    Esto permite que el tooltip cambie de tema al cambiar modo claro/oscuro.
+    """
+    if frame_padre is None:
+        return
+
+    tooltip_frame = getattr(frame_padre, "_tooltip_frame", None)
+    tooltip_label = getattr(frame_padre, "_tooltip_label", None)
+
+    if tooltip_frame is None or tooltip_label is None:
+        return
+
+    # Si no está visible, no hacemos nada
+    try:
+        if not tooltip_frame.winfo_ismapped():
+            return
+    except Exception:
+        pass
+
+    # Colores según modo (activos)
+    color_fondo_tooltip = configuracion.COLOR_TEXTO_URL
+    color_borde_tooltip = configuracion.COLOR_TEXTO_URL
+    color_texto_tooltip = configuracion.COLOR_FONDO_VENTANA
+
+    try:
+        tooltip_frame.configure(
+            fg_color=color_fondo_tooltip,
+            border_color=color_borde_tooltip
+        )
+    except Exception:
+        pass
+
+    try:
+        tooltip_label.configure(text_color=color_texto_tooltip)
+    except Exception:
+        pass

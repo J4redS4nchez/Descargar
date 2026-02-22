@@ -183,6 +183,15 @@ class TarjetasLayout:
             self.componente_formato.aplicar_tema()
 
 
+        # Si hay un tooltip visible, actualizarlo al cambiar de modo
+        try:
+            from componentes.tooltip import aplicar_tema_tooltip
+            aplicar_tema_tooltip(self.tarjeta_4)
+        except Exception:
+            pass
+
+
+
     def _al_cambiar_formato(self, _formato_actual: str):
         """
         Se llama cuando el usuario cambia el formato en el ComboBox.
