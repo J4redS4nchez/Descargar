@@ -77,6 +77,45 @@ def _formatear_renglones_invalidos(indices):
 
 
 
+
+
+
+def _limpiar_todos_los_renglones_url(tarjeta_url):
+    """
+    Limpia el textbox principal y todos los renglones extra (si existen),
+    usando el método interno _borrar_entry para respetar placeholders.
+    """
+    if tarjeta_url is None:
+        return
+
+    # Limpiar principal
+    try:
+        tarjeta_url._borrar_entry(tarjeta_url.cuadro_url)
+    except Exception:
+        try:
+            tarjeta_url.cuadro_url.delete(0, "end")
+        except Exception:
+            pass
+
+    # Limpiar extras (si existen)
+    for entry_extra in getattr(tarjeta_url, "renglones_extra", []):
+        if entry_extra is None:
+            continue
+        try:
+            tarjeta_url._borrar_entry(entry_extra)
+        except Exception:
+            try:
+                entry_extra.delete(0, "end")
+            except Exception:
+                pass
+
+
+
+
+
+
+
+
 def al_presionar_descargar(tarjeta_url, tarjeta_formato, establecer_progreso=None, contenedor_tooltip=None):
     """
     Se llama cuando se presiona el botón de descargar.
@@ -260,6 +299,10 @@ def al_presionar_descargar(tarjeta_url, tarjeta_formato, establecer_progreso=Non
             if callable(establecer_progreso):
                 establecer_progreso((i + 1) / cantidad)
 
+
+        # Al terminar TODAS las descargas, limpiar los renglones
+        _limpiar_todos_los_renglones_url(tarjeta_url)
+
         return False
 
     # -------------------------
@@ -271,5 +314,14 @@ def al_presionar_descargar(tarjeta_url, tarjeta_formato, establecer_progreso=Non
     print(f"[analizar] formato = {formato}")
     print(f"[analizar] ruta_guardado = {ruta_guardado}")
 
+
+
     _descargar_una_url(URL, establecer_progreso)
+
+    # Al terminar la descarga, limpiar el textbox principal
+    try:
+        tarjeta_url._borrar_entry(tarjeta_url.cuadro_url)
+    except Exception:
+        tarjeta_url.cuadro_url.delete(0, "end")
+
     return True
