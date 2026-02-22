@@ -1,6 +1,56 @@
 # funcionamiento/analizar.py
 
-def al_presionar_descargar(tarjeta_url, tarjeta_formato, establecer_progreso=None):
+
+import re
+
+def _es_url_youtube_valida(texto: str) -> bool:
+    """
+    Validación básica (rápida):
+    - Debe ser http/https
+    - Debe ser youtube.com o youtu.be
+    - Debe parecer watch?v=... o shorts/... o youtu.be/<id>
+    """
+    if not texto:
+        return False
+
+    t = texto.strip()
+
+    if not (t.startswith("http://") or t.startswith("https://")):
+        return False
+
+    # Dominios permitidos
+    if ("youtube.com" not in t) and ("youtu.be" not in t):
+        return False
+
+    # Rutas típicas
+    if "youtu.be/" in t:
+        return True
+
+    if "/watch?v=" in t:
+        return True
+
+    if "/shorts/" in t:
+        return True
+
+    return False
+
+
+
+
+
+def _formatear_renglones_invalidos(indices):
+    """
+    indices: lista de ints [1,3,4]
+    Devuelve texto: "Las URLs de los renglones 1,3,4 son inválidas"
+    """
+    indices_txt = ",".join(str(i) for i in indices)
+    if len(indices) == 1:
+        return f"La URL del renglón {indices_txt} es inválida"
+    return f"Las URLs de los renglones {indices_txt} son inválidas"
+
+
+
+def al_presionar_descargar(tarjeta_url, tarjeta_formato, establecer_progreso=None, contenedor_tooltip=None):
     """
     Se llama cuando se presiona el botón de descargar.
 
@@ -15,7 +65,76 @@ def al_presionar_descargar(tarjeta_url, tarjeta_formato, establecer_progreso=Non
 
     if tarjeta_url is None or tarjeta_formato is None:
         print("[analizar] No hay referencias a tarjeta_url/tarjeta_formato.")
-        return
+        return False
+
+
+    from componentes.tooltip import mostrar_tooltip
+
+    # --- VALIDACIÓN DE URLs ---
+    invalidos = []  # lista de tuplas (numero_renglon, entry_widget)
+
+    if not tarjeta_url.desplegado:
+        # Renglón 1 = cuadro_url
+        texto = tarjeta_url.cuadro_url.get().strip()
+        if not _es_url_youtube_valida(texto):
+            invalidos.append((1, tarjeta_url.cuadro_url))
+
+        if invalidos:
+            # Mostrar tooltip
+            if contenedor_tooltip is not None:
+                mostrar_tooltip(contenedor_tooltip, "URL inválido", 5000)
+
+            # Borrar el textbox principal usando tu método (para que respete placeholder)
+            try:
+                tarjeta_url._borrar_entry(tarjeta_url.cuadro_url)
+            except Exception:
+                tarjeta_url.cuadro_url.delete(0, "end")
+
+            return False 
+
+    else:
+        # Desplegado: renglón 1 = principal, 2..n = extras
+        # Principal
+        texto = tarjeta_url.cuadro_url.get().strip()
+        if texto and (not _es_url_youtube_valida(texto)):
+            invalidos.append((1, tarjeta_url.cuadro_url))
+        elif (not texto):
+            # Si está vacío, no se considera inválido (solo se ignora)
+            pass
+
+        # Extras (renglón 2 en adelante)
+        for i, entry_extra in enumerate(getattr(tarjeta_url, "renglones_extra", []), start=2):
+            if entry_extra is None:
+                continue
+            texto_extra = entry_extra.get().strip()
+            if not texto_extra:
+                continue  # vacío = ignorar
+            if not _es_url_youtube_valida(texto_extra):
+                invalidos.append((i, entry_extra))
+
+        if invalidos:
+            indices = [num for (num, _) in invalidos]
+            mensaje = _formatear_renglones_invalidos(indices)
+
+            if contenedor_tooltip is not None:
+                mostrar_tooltip(contenedor_tooltip, mensaje, 5000)
+
+            # Borrar solo los renglones inválidos
+            for _, entry in invalidos:
+                try:
+                    tarjeta_url._borrar_entry(entry)
+                except Exception:
+                    entry.delete(0, "end")
+
+            return False
+    # --- FIN VALIDACIÓN ---
+
+
+
+
+
+
+
 
     # Obtener formato y ruta (se usan en ambos casos)
     formato = tarjeta_formato.select_formato.get().strip()
@@ -73,7 +192,7 @@ def al_presionar_descargar(tarjeta_url, tarjeta_formato, establecer_progreso=Non
 
         if cantidad == 0:
             print("[analizar] No hay URLs con contenido. No se descarga nada.")
-            return
+            return False
 
         # Descargar secuencialmente y dividir progreso en segmentos
         for i, url in enumerate(urls):
@@ -104,7 +223,7 @@ def al_presionar_descargar(tarjeta_url, tarjeta_formato, establecer_progreso=Non
             if callable(establecer_progreso):
                 establecer_progreso((i + 1) / cantidad)
 
-        return
+        return False
 
     # -------------------------
     # CASO 2: NO desplegada
@@ -116,3 +235,4 @@ def al_presionar_descargar(tarjeta_url, tarjeta_formato, establecer_progreso=Non
     print(f"[analizar] ruta_guardado = {ruta_guardado}")
 
     _descargar_una_url(URL, establecer_progreso)
+    return True

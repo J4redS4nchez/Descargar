@@ -20,6 +20,7 @@ class ProgresoTarjeta:
         self.icono_descargar_grande = None
         self.tarjeta_url = None
         self.tarjeta_formato = None
+        self.tarjeta_aviso = None
 
     def crear(self):
         """
@@ -154,20 +155,28 @@ class ProgresoTarjeta:
         # Reiniciar barra al iniciar
         self.establecer_progreso(0.0)
 
+
         def tarea():
+            resultado_descarga = False
             try:
-                al_presionar_descargar(
+                resultado_descarga = al_presionar_descargar(
                     tarjeta_url=self.tarjeta_url,
                     tarjeta_formato=self.tarjeta_formato,
-                    establecer_progreso=self.establecer_progreso
+                    establecer_progreso=self.establecer_progreso,
+                    contenedor_tooltip=self.tarjeta_aviso
                 )
+            except Exception as e:
+                print(f"[progreso] Error en descarga: {e}")
+                resultado_descarga = False
             finally:
-                # Al terminar, reactivar botón en el hilo principal
                 def _finalizar():
                     if self.boton_descargar is not None:
                         self.boton_descargar.configure(state="normal")
 
-                    # Opcional: dejar en 100% un momento y luego reiniciar
+                    if not resultado_descarga:
+                        self.establecer_progreso(0.0)
+                        return
+
                     self.establecer_progreso(1.0)
                     self.tarjeta_padre.after(800, lambda: self.establecer_progreso(0.0))
 
@@ -175,6 +184,9 @@ class ProgresoTarjeta:
                     self.tarjeta_padre.after(0, _finalizar)
                 except Exception:
                     _finalizar()
+
+
+
 
         hilo = threading.Thread(target=tarea, daemon=True)
         hilo.start()
@@ -236,12 +248,7 @@ class ProgresoTarjeta:
 
 
 
-    def conectar_tarjetas(self, tarjeta_url, tarjeta_formato):
-        """
-        Guarda referencias para que el botón Descargar pueda leer:
-        - URLTarjeta (textbox URL y estado desplegado)
-        - FormatoTarjeta (selectbox y textbox ruta)
-        """
+    def conectar_tarjetas(self, tarjeta_url, tarjeta_formato, tarjeta_aviso=None):
         self.tarjeta_url = tarjeta_url
         self.tarjeta_formato = tarjeta_formato
-
+        self.tarjeta_aviso = tarjeta_aviso
