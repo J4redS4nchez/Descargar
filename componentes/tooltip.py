@@ -93,3 +93,10 @@ def mostrar_tooltip(frame_padre, mensaje: str, duracion_ms: int = 5000):
         frame_padre._tooltip_after_id = None
 
     frame_padre._tooltip_after_id = frame_padre.after(duracion_ms, ocultar)
+
+
+
+
+def mostrar_tooltip_ruta_invalida(frame_padre, duracion_ms: int = 5000):
+    """Muestra un tooltip con el mensaje 'Ruta invalida'."""
+    mostrar_tooltip(frame_padre, "Ruta invalida", duracion_ms)

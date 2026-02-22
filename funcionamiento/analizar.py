@@ -2,6 +2,8 @@
 
 
 import re
+import os
+
 
 def _es_url_youtube_valida(texto: str) -> bool:
     """
@@ -33,6 +35,31 @@ def _es_url_youtube_valida(texto: str) -> bool:
         return True
 
     return False
+
+
+
+
+def _ruta_guardado_valida(ruta: str) -> bool:
+    """Valida la ruta de guardado.
+
+    Reglas:
+    - Debe existir en el sistema.
+    - Debe ser una carpeta (directorio).
+    """
+    if not ruta:
+        return False
+
+    r = ruta.strip()
+    if not r:
+        return False
+
+    # Normalizar (por si viene con comillas o espacios raros)
+    r = r.strip('"').strip()
+
+    return os.path.exists(r) and os.path.isdir(r)
+
+
+
 
 
 
@@ -130,7 +157,17 @@ def al_presionar_descargar(tarjeta_url, tarjeta_formato, establecer_progreso=Non
     # --- FIN VALIDACIÓN ---
 
 
+    # --- VALIDACIÓN DE RUTA ---
+    ruta_guardado = tarjeta_formato.cuadro_ruta.get().strip()
+    if not _ruta_guardado_valida(ruta_guardado):
+        if contenedor_tooltip is not None:
+            from componentes.tooltip import mostrar_tooltip_ruta_invalida
+            mostrar_tooltip_ruta_invalida(contenedor_tooltip, 5000)
+        return False
+    # --- FIN VALIDACIÓN RUTA ---
 
+    # Obtener formato (se usa en ambos casos)
+    formato = tarjeta_formato.select_formato.get().strip()
 
 
 
