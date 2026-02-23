@@ -21,3 +21,10 @@ assets/edicion/
 
 # Variables de entorno
 .env
+
+#capturas del programa
+capturas/
+
+*.png
+*.jpg
+*.jpeg
