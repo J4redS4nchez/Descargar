@@ -59,12 +59,38 @@ Otros archivos relevantes:
 - Python 3.x (si se ejecuta desde código).
 - Dependencias de Python (según tu entorno/proyecto).
 
+---
 
+## Presentación
 
+<img width="893" height="527" alt="presentacion_claro" src="https://github.com/user-attachments/assets/438ff7c6-1cb7-4285-b312-38e76c5c796c" />
+<img width="900" height="527" alt="presentacion_oscuro" src="https://github.com/user-attachments/assets/5424b25d-4395-4df5-bb35-374529fc9836" />
 
+---
 
+## Interfaz
 
+<img width="896" height="530" alt="interfaz_claro" src="https://github.com/user-attachments/assets/4aee67e6-07e3-4ccc-9e5d-7411fe6995f0" />
+<img width="894" height="530" alt="interfaz_oscuro" src="https://github.com/user-attachments/assets/0b0e2c08-209c-40e5-b289-496aa7c74a07" />
 
-> Si aún no tienes `requirements.txt`, puedes generarlo así:
-```bash
-pip freeze > requirements.txt
+---
+
+## Lista desplegable
+
+<img width="576" height="221" alt="lista_Claro" src="https://github.com/user-attachments/assets/9c1d24a1-2605-4098-9e60-2f2f0336ebee" />
+<img width="548" height="155" alt="lista_oscuro" src="https://github.com/user-attachments/assets/fbc605db-96e6-4eee-93c2-4ea637c8981a" />
+
+---
+
+## Formato
+
+<img width="138" height="164" alt="formato_claro" src="https://github.com/user-attachments/assets/95c8be27-cb39-4ea2-a9d0-2b0e19aa0005" />
+<img width="138" height="164" alt="formato_oscuro" src="https://github.com/user-attachments/assets/658cbfa3-dbcb-45e3-b843-772ae4b468d8" />
+
+---
+
+## Barra de progreso
+
+<img width="623" height="157" alt="barra_claro" src="https://github.com/user-attachments/assets/be25c80e-75ce-48df-8546-ba9b611e23b8" />
+<img width="623" height="157" alt="barra_oscuro" src="https://github.com/user-attachments/assets/3d73898a-1a67-4cd9-8907-4b532e7f8d65" />
+
