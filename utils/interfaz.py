@@ -51,3 +51,35 @@ def configurar_columnas_grid(contenedor, pesos):
     """Configura el peso de múltiples columnas de una sola vez."""
     for i, peso in enumerate(pesos):
         contenedor.grid_columnconfigure(i, weight=peso)
+
+
+
+
+
+
+
+# --- Rutas de recursos (compatible con PyInstaller) ---
+
+import os
+import sys
+
+def obtener_ruta_recurso(ruta_relativa: str) -> str:
+    """
+    Devuelve la ruta absoluta de un recurso.
+    - En desarrollo: usa la carpeta del proyecto.
+    - En PyInstaller: usa la carpeta temporal _MEIPASS.
+    """
+    if hasattr(sys, "_MEIPASS"):
+        base = sys._MEIPASS
+    else:
+        base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base, ruta_relativa)
+
+
+
+def obtener_ruta_ffmpeg() -> str:
+    """
+    Devuelve la ruta a la carpeta donde están ffmpeg.exe y ffprobe.exe.
+    Compatible con PyInstaller.
+    """
+    return obtener_ruta_recurso(os.path.join("bin", "ffmpeg"))

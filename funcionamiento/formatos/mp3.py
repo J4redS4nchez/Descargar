@@ -2,9 +2,11 @@
 
 import os
 from yt_dlp import YoutubeDL
+from utils.interfaz import obtener_ruta_ffmpeg
+
 
 # Tu ruta de FFmpeg
-FFMPEG_BIN = r"C:\Users\jaret\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.0.1-full_build\bin"
+FFMPEG_BIN = obtener_ruta_ffmpeg()
 
 
 def _obtener_nombre_libre_mp3(ruta_guardado: str, titulo: str) -> str:

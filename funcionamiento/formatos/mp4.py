@@ -2,9 +2,10 @@
 
 import os
 from yt_dlp import YoutubeDL
+from utils.interfaz import obtener_ruta_ffmpeg
 
 # Tu ruta de FFmpeg (misma que usaste en short)
-FFMPEG_BIN = r"C:\Users\jaret\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.0.1-full_build\bin"
+FFMPEG_BIN = obtener_ruta_ffmpeg()
 
 
 def descargar_mp4(URL: str, ruta_guardado: str, establecer_progreso=None):

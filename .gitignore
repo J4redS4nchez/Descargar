@@ -1,14 +1,23 @@
-__pycache__/
-*.pyc
+# Entornos y caché
 .venv/
 venv/
-dist/
+__pycache__/
+*.pyc
+
+# PyInstaller
 build/
+dist/
 *.spec
-.envgit add .
-git commit -m "Primer commit"
 
+# Instalador / ejecutables generados
+*.exe
 
+# Logs temporales
+*.log
 
+# Archivos de diseño
 *.psd
 assets/edicion/
+
+# Variables de entorno
+.env

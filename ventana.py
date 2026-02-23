@@ -10,7 +10,8 @@ from componentes.switch_MODO import SwitchModo
 from componentes.tarjetas import TarjetasLayout
 import configuracion
 import precarga
-from utils.interfaz import centrar_ventana, ocultar_ventana, mostrar_ventana_lista
+from utils.interfaz import centrar_ventana, ocultar_ventana, mostrar_ventana_lista, obtener_ruta_recurso
+import os
 
 
 
@@ -21,6 +22,19 @@ class VentanaPrincipal:
         ocultar_ventana(self.ventana)  # Oculta mientras se prepara (evita ventana chiquita)
 
         self.ventana.title("Eemsik")
+
+
+        # Icono de la aplicación (barra de tareas y ventana)
+        try:
+            ruta_icono = obtener_ruta_recurso(os.path.join("assets", "Logo.ico"))
+            self.ventana.iconbitmap(ruta_icono)
+        except Exception:
+            # Si falla por algún motivo, no detenemos la app
+            pass
+
+
+
+
         self.ventana.resizable(False, False)
         # Aplica el color de fondo según la configuración (claro/oscuro)
         self.ventana.configure(bg=configuracion.COLOR_FONDO_VENTANA)
